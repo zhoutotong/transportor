@@ -8,12 +8,13 @@
 
 class MyTransfor : public TransLayer
 {
-    public:
+public:
     MyTransfor() : TransLayer() {}
-    ~MyTransfor(){
-        if(dataBuf)
+    ~MyTransfor()
+    {
+        if (dataBuf)
         {
-            delete []dataBuf;
+            delete[] dataBuf;
         }
     }
 
@@ -22,21 +23,22 @@ class MyTransfor : public TransLayer
     size_t recLen = 0;
     bool sendOk = false;
 
-    protected:
-    int send2Destination(uint8_t *data, size_t len) override{
+protected:
+    int send2Destination(uint8_t *data, size_t len) override
+    {
         dataMutex.lock();
-        if(sendOk)
+        if (sendOk)
         {
-        memcpy(dataBuf, data, len);
-        recLen = len;
-        sendOk = false;
+            memcpy(dataBuf, data, len);
+            recLen = len;
+            sendOk = false;
         }
 
         dataMutex.unlock();
         usleep(1000);
     };
-    int recData(uint8_t *data, size_t *len) override{
-        
+    int recRawData(uint8_t *data, size_t *len) override
+    {
         dataMutex.lock();
         memcpy(data, dataBuf, recLen);
         *len = recLen;
@@ -44,6 +46,13 @@ class MyTransfor : public TransLayer
         sendOk = true;
         dataMutex.unlock();
     };
+    void recData(uint8_t *data, size_t len) override
+    {
+        std::cout << "read available data: " << len << std::endl;
+        std::string msg;
+        msg.insert(0, (char *)data, len);
+        std::cout << "msg: " << msg << std::endl;
+    }
 };
 
 int main(int argc, char *argv[])
@@ -58,9 +67,9 @@ int main(int argc, char *argv[])
 
     sleep(1);
 
-    while(true)
+    while (true)
     {
-        t.sendData((uint8_t*)msg.data(), len);
+        t.sendData((uint8_t *)msg.data(), len);
         sleep(1);
     }
     t.release();

@@ -22,7 +22,8 @@ public:
 
 protected:
     virtual int send2Destination(uint8_t *data, size_t len) = 0;
-    virtual int recData(uint8_t *data, size_t *len) = 0;
+    virtual int recRawData(uint8_t *data, size_t *len) = 0;
+    virtual void recData(uint8_t *data, size_t len) = 0;
 
 private:
     bool mIsWorking;

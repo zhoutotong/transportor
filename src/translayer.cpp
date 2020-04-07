@@ -39,7 +39,7 @@ void TransLayer::setup()
             size_t recLen = 0;
             if (!pbuf)
                 return;
-            recData(pbuf, &recLen);
+            recRawData(pbuf, &recLen);
             if (recLen == 0)
                 continue;
             procIndex = 0; // 使用索引来解决粘包问题
@@ -62,10 +62,7 @@ void TransLayer::setup()
                         if (getHeader && h.marker == Marked)
                         {
                             // 读到 marked 标志，说明出现完整包
-                            std::cout << "read available data: " << recSize << " index of pkg: " << h.index << std::endl;
-                            std::string msg;
-                            msg.insert(0, (char *)mRecBuf, recSize);
-                            std::cout << "msg: " << msg << std::endl;
+                            recData(mRecBuf, recSize);
                             recSize = 0;
                             bzero(&h, sizeof(TRANSLAYER_HEAD));
                             bzero(&t, sizeof(TRANSLAYER_TAIL));
